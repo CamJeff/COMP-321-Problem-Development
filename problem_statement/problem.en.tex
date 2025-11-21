@@ -2,6 +2,10 @@
 \usepackage{amsmath, amssymb}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[most]{tcolorbox}
 
 % Define \problemname and \illustration if not using Kattis template
 \newcommand{\problemname}[1]{\section*{#1}}
@@ -13,6 +17,16 @@
     \end{figure}
 }
 
+\tcbset{
+  samplebox/.style={
+    colback=gray!10,   % light gray background
+    colframe=gray!50,  % subtle border
+    boxrule=0.4pt,
+    arc=2mm,           % rounded corners
+    left=4mm,right=4mm,top=2mm,bottom=2mm,
+  }
+}
+
 \begin{document}
 
 \problemname{Title of the Problem Here}
@@ -20,24 +34,104 @@
 % Example use of the \illustration command
 % \illustration{0.3}{filename.jpg}{Photo by \href{url_here}{link text here, e.g. author name}}
 
-Put the problem story here. Here are some common issues to keep in mind as you edit:
+You want to write a program that will allow you to optimize the Kattis problems you select when completing your COMP 321 assignments. For each assignment, you only need to answer a subset of the listed questions to reach full marks. Each problem has a:
 
 \begin{itemize}
-    \item Use \LaTeX{} math mode for (most) numbers. The few exceptions are for years (e.g., 2019) or whenever a number is part of a string token.
-    \item For numbers $1\,000$ or larger, use thousands separator \verb|\,|. So, for example, one million would be $1\,000\,000$.
-    \item Write in active voice (i.e., avoid passive voice).
-    \item Write in present tense (avoid the word \texttt{will}, especially in the input description). For example, prefer: ``Input starts with an integer $n$ followed by $n$ lines...'' rather than ``Input \emph{will} start with an integer $n$, then \emph{will} come $n$ lines...''.
+    \item Point value (some positive integer)
+    \item Difficulty rating (an integer from 1.0 to 10.0)
+    \item Topic (like trees, graphs,...)
+    \item Text length (number of words)
 \end{itemize}
+
+Although you’re a lazy student, you still care about your grades, and so you want to achieve full marks on your assignment while putting in the least amount of effort possible. On a given assignment, you need to attain at least $M$ points, and you want to do so while trying to:
+
+
+\begin{enumerate}
+    \item Minimize the total difficulty of the chosen problems first, then
+    \item Minimize the number of problems solved. Then,
+    \item Align the topics of the problem with concepts you are most comfortable with. Then finally,
+    \item Minimize the total length of text read
+\end{enumerate}
+
+These requirements are listed in preferential order. That is, you first and foremost want to minimize the difficulty of questions you select. If there are still some choices for question subsets, then you can narrow it down further by minimizing the number of points solved, and work down to the least pressing requirement, which is minimizing the total length of text you read.
+
 
 \section*{Input}
 
-Put the input format (syntax) description here, including constraints on all input values. That includes number ranges, the maximum number of digits after the decimal point for real values, the character sets and length ranges for strings, etc. If possible, always give a count of the number of items that follow (test cases, e.g.) rather than delimiting with a token or EOF. The input format should be fairly precise, so that the reader knows exactly what to expect (it should usually be easy to write a program to read the input using line-oriented or token-oriented parsing).
+The first line contains three integers $M$, $N$, and $K$, which are the minimum total points needed for full score, the number of problems on an assignment, and the number of topics in your personal preference list, respectively.
+
+\bigskip
+
+The next line contains $K$ distinct strings: the topics ranked from best to worst (if $K=0$, this line will be blank).
+
+\bigskip
+
+The following $N$ lines describes the problems on the assignment in the following format:
+
+$$\texttt{Problem\_No.}\;\;\;\;\;\;\texttt{Points}\;\;\;\;\;\;\texttt{Difficulty}\;\;\;\;\;\;\texttt{Topic}\;\;\;\;\;\;\texttt{Text\_Length}$$
+
+
+Where ``\texttt{Problem\_No}" $\in [1,N]$, is the problem number on the list of questions, ``\texttt{Points}"$\in[0,M]$ is the number of points that problem is worth,  ``\texttt{Difficulty}" $\in[1.0,10.0]$ is the difficulty rating of the problem (larger rating means more difficult), ``\texttt{topic}" is a non-empty string without spaces (assume exactly one topic is assigned to each problem) which is the topic the problem is assigned to, and finally, $1\leq \texttt{Text\_Length} \leq 10^4$ is the number of words in the problem statement. 
 
 \section*{Output}
 
-Describe the output. Kattis output judging is not sensitive to case changes or space changes (including line formatting and blank lines). Try to maintain this flexibility with your problem—do not be overly precise or prescriptive here in the output formatting description. However, if exact textual matching or floating-point precision is required, do specify the constraints (e.g., ``your answer should be correct within a relative or absolute error of $10^{-3}$'').
+One line, containing the problem numbers, separated by spaces, that you choose in order to complete your assignment under the above conditions. If no subset of problems can achieve at least $M$ points, output $-1$. 
 
-\section*{Sample Input 1	Sample Output 1}
-Please provide at least one sample Input and Output for your problem.
+\bigskip
+
+
+\begin{center}
+  % Sample Input 1
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Sample Input 1}\\[4pt]
+    \begin{tcolorbox}[samplebox]
+      \texttt{10 4 2\\
+      dp graphs arrays\\
+      1 5 3 dp 120\\
+      2 6 5 graphs 200\\
+      3 4 1 arrays 50\\
+      4 8 4 dp 300}
+    \end{tcolorbox}
+  \end{minipage}
+  \hfill
+  % Sample Output 1
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Sample Output 1}\\[4pt]
+    \begin{tcolorbox}[samplebox]
+      \texttt{3 4}
+    \end{tcolorbox}
+  \end{minipage}
+\end{center}
+
+
+\bigskip
+
+
+\begin{center}
+  % Sample Input 1
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Sample Input 2}\\[4pt]
+    \begin{tcolorbox}[samplebox]
+      \texttt{10 3 3 \\
+stacks queues trees \\
+1 2 1 stacks 100 \\
+2 2 1 stacks 100 \\
+3 10 9 trees 100 \\
+}
+    \end{tcolorbox}
+  \end{minipage}
+  \hfill
+  % Sample Output 1
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Sample Output 2}\\[4pt]
+    \begin{tcolorbox}[samplebox]
+      \texttt{3}
+    \end{tcolorbox}
+  \end{minipage}
+\end{center}
+
+
+
+
 
 \end{document}
