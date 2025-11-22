@@ -37,9 +37,9 @@
 
 \begin{wrapfigure}{r}{0.35\textwidth}
     \centering
-    \vspace{-15pt}
+    \vspace{-15pt} % optional: tweak vertical position
     \includegraphics[width=\linewidth]{Im.png}
-    \vspace{5pt} 
+    \vspace{5pt} % optional
 \end{wrapfigure}
 
 You want to write a program that will allow you to optimize the Kattis problems you 
@@ -79,12 +79,12 @@ The first line contains two integers $M$ and $N$, which are the minimum total po
 
 \bigskip
 
-The following $N$ lines describes the problems on the assignment in the following format:
+\noindent The following $N$ lines describes the problems on the assignment in the following format:
 
 $$\texttt{Problem\_No.}\;\;\;\;\;\;\texttt{Points}\;\;\;\;\;\;\texttt{Difficulty}\;\;\;\;\;\;\texttt{Topic}\;\;\;\;\;\;\texttt{Text\_Length}$$
 
 
-Where ``\texttt{Problem\_No}" $\in [1,N]$, is the problem number on the list of questions, ``\texttt{Points}"$\in[0,M]$ is the number of points that problem is worth,  ``\texttt{Difficulty}" $\in[1.0,10.0]$ is the difficulty rating of the problem (larger rating means more difficult), ``\texttt{topic}" is a non-empty string without spaces (assume exactly one topic is assigned to each problem) which is the topic the problem is assigned to, and finally, $1\leq \texttt{Text\_Length} \leq 10^4$ is the number of words in the problem statement. 
+\noindent Where ``\texttt{Problem\_No}" $\in [1,N]$, is the problem number on the list of questions, ``\texttt{Points}"$\in[0,M]$ is the number of points that problem is worth,  ``\texttt{Difficulty}" $\in[1.0,10.0]$ is the difficulty rating of the problem (larger rating means more difficult), ``\texttt{topic}" is a non-empty string without spaces (assume exactly one topic is assigned to each problem) which is the topic the problem is assigned to, and finally, $1\leq \texttt{Text\_Length} \leq 10^4$ is the number of words in the problem statement. 
 
 \section*{Output}
 
