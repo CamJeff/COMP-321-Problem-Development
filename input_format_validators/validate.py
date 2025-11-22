@@ -1,104 +1,106 @@
 #!/usr/bin/env python3
-
-# This is a sample input validator, written in Python 3.
-
-# Please refer to the comments in README.md for a description of the syntax it
-# is validating. Then, change it as you need.
-
 import sys
-import re
 
-INT_NONNEG = r'(0|[1-9][0-9]*)'   # 0, 1, 2, ..., no leading zeros
-INT_POS    = r'[1-9][0-9]*'       # 1, 2, ..., no leading zeros
+def error(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(1)
 
-# INPUT LINE 1: Reading numbers M, N
-first_line = sys.stdin.readline()
-assert re.match(rf'^{INT_NONNEG} {INT_POS}\n$', first_line), "Bad format on first line"
+def read_ints(line, expected=None):
+    try:
+        nums = list(map(int, line.strip().split()))
+    except:
+        error("Line must contain integers")
+    if expected is not None and len(nums) != expected:
+        error(f"Expected {expected} integers, got {len(nums)}")
+    return nums
 
-M_str, N_str = first_line.split()
-M = int(M_str)
-N = int(N_str)
+def main():
+    data = sys.stdin.read().rstrip().split("\n")
+    if len(data) < 2:
+        error("Input too short")
 
-# We must have at least one problem. Points needed must be non-negative.
-assert N >= 1, "N must be at least 1"
-assert M >= 0, "M must be non-negative"
+    # -----------------------------------------
+    # Line 1: M N   (NO K, matching PDF)
+    # -----------------------------------------
+    try:
+        M, N = map(int, data[0].split())
+    except:
+        error("First line must contain two integers M N")
 
-# INPUT LINE 2: topic preference list
-topics_line = sys.stdin.readline()
+    if M < 0:
+        error("M must be non-negative")
+    if N < 0:
+        error("N must be non-negative")
 
-# There MUST be a non-empty topic preference list
-assert topics_line != '\n', "Topic preference list cannot be empty when problems exist"
-assert re.match(r'^\S+( \S+)*\n$', topics_line), "Bad format on topics line"
+    # -----------------------------------------
+    # Line 2: topic strings (distinct)
+    # -----------------------------------------
+    topics = data[1].split()
+    if len(topics) == 0:
+        error("At least one topic required")
 
-preferred_topics = topics_line.strip().split()
+    if len(topics) != len(set(topics)):
+        error("Topic strings must be distinct")
 
-# topics must be distinct
-assert len(preferred_topics) == len(set(preferred_topics)), "Duplicate topics in preference list"
+    # -----------------------------------------
+    # Next N lines: each problem
+    # id points difficulty topic length
+    # -----------------------------------------
+    if len(data) != 2 + N:
+        error("Number of problem lines does not match N")
 
-# NEXT N INPUT LINES: the problems
-#
-# Format per line:
-#   Problem_No  Points  Difficulty  Topic  Text_Length
-#
-# Constraints:
-#   Problem_No   in [1, N], no leading zeros
-#   Points       in [0, M], no leading zeros for non-zero
-#   Difficulty   integer from 1 to 10 (no leading zeros)
-#   Topic        non-empty string, no spaces (must be in preference list)
-#   Text_Length  integer, 1 <= Text_Length <= 10^4, no leading zeros for non-zero
-#
+    seen_ids = set()
 
-problem_id_pattern = INT_POS                  # Problem_No > 0, no leading zeros
-points_pattern     = INT_NONNEG               # Points >= 0
-difficulty_pattern = r'(10|[1-9])'            # 1..10, no leading zeros
-topic_pattern      = r'\S+'                   # non-empty, no spaces
-textlen_pattern    = r'[1-9][0-9]{0,4}'       # 1..99999, we'll clamp to <= 10000 later
+    for i in range(N):
+        parts = data[2 + i].split()
+        if len(parts) != 5:
+            error("Each problem line must have 5 values: id points difficulty topic length")
 
-problem_line_re = re.compile(
-    rf'^{problem_id_pattern} {points_pattern} {difficulty_pattern} {topic_pattern} {textlen_pattern}\n$'
-)
+        pid_str, pts_str, diff_str, topic_str, length_str = parts
 
-seen_ids = set()
+        # id must be integer
+        try:
+            pid = int(pid_str)
+        except:
+            error("Problem id must be an integer")
 
-for _ in range(N):
-    line = sys.stdin.readline()
-    assert line != '', "Unexpected end of input while reading problems"
-    assert problem_line_re.match(line), "Bad format in problem line"
+        if pid <= 0:
+            error("Problem id must be positive")
 
-    p_id_str, pts_str, diff_str, topic, len_str = line.split()
+        if pid in seen_ids:
+            error("Duplicate problem id")
+        seen_ids.add(pid)
 
-    # Topic must appear in the preference list
-    assert topic in preferred_topics, f"Topic '{topic}' not found in preference list"
+        # points: any non-negative integer (CAN be > M)
+        try:
+            pts = int(pts_str)
+        except:
+            error("Points must be an integer")
+        if pts < 0:
+            error("Points must be non-negative")
 
-    # Convert to integers and check ranges
-    p_id = int(p_id_str)
-    pts  = int(pts_str)
-    diff = int(diff_str)
-    length = int(len_str)
+        # difficulty: non-negative integer
+        try:
+            diff = int(diff_str)
+        except:
+            error("Difficulty must be an integer")
+        if diff < 0:
+            error("Difficulty must be non-negative")
 
-    # Problem_No in [1, N], all unique
-    assert 1 <= p_id <= N, "Problem ID out of range"
-    assert p_id not in seen_ids, "Duplicate problem ID"
-    seen_ids.add(p_id)
+        # topic must be in the topic list
+        if topic_str not in topics:
+            error("Problem topic must appear in topic list")
 
-    # Points in [0, M]
-    assert 0 <= pts <= M, "Points out of range"
+        # length: non-negative integer
+        try:
+            length = int(length_str)
+        except:
+            error("Length must be an integer")
+        if length < 0:
+            error("Length must be non-negative")
 
-    # Difficulty in [1, 10]
-    assert 1 <= diff <= 10, "Difficulty out of range"
+    # If all checks pass:
+    return
 
-    # Text length in [1, 10000]
-    assert 1 <= length <= 10000, "Text length out of range"
-
-    # Topic: already guaranteed non-empty and no spaces by regex.
-    # Character set is not further restricted by the problem statement.
-
-# Ensure we have exactly N problems and IDs are a permutation of 1..N
-assert len(seen_ids) == N, "Incorrect number of distinct problem IDs"
-
-# Ensure no extra input
-assert sys.stdin.readline() == '', "Extra input detected"
-
-# If we get here, the input is valid, yay!!!!
-sys.exit(42)
-
+if __name__ == "__main__":
+    main()

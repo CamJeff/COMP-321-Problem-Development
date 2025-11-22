@@ -1,38 +1,10 @@
-# This is a sample input validator, written for the checktestdata validation
-# language (see:
-# https://github.com/DOMjudge/checktestdata/blob/master/doc/format-spec.md).
+# First line: two integers M and N
+int int
 
-# Please refer to the comments in README.md for a description of the syntax it
-# is validating. Then, change it as you need.
+# Second line: space-separated topics (at least 1)
+tokens
 
-# First line: M N
-# M: non-negative, can be very large (Imma keep it up to  10^30 here, as specified in our question)
-# N: number of problems, at least 1 (upper bound chosen generously)
-INT(0,1000000000000000000000000000000,M) SPACE
-INT(1,1000000000,N) NEWLINE
-
-# Second line: topic preferences (one line, may have one or more tokens).
-# We just enforce “no embedded newlines”; Python validator will do strict checks.
-REGEX("[^\n]*") NEWLINE
-
-# Next N lines: each problem
-# Format:
-#   Problem_No  Points  Difficulty  Topic  Text_Length
-#
-# Problem_No   : positive integer (allow up to 10^9 here)
-# Points       : non-negative integer (up to 10^30, Python will also enforce ≤ M)
-# Difficulty   : integer from 1 to 10
-# Topic        : non-empty, no whitespace
-# Text_Length  : integer, 1..10000
-REPI(j,N)
-    INT(1,1000000000,p_id[j]) SPACE
-    INT(0,1000000000000000000000000000000,points[j]) SPACE
-    INT(1,10,diff[j]) SPACE
-    REGEX("[^ \t\r\n]+",topic[j]) SPACE
-    INT(1,10000,textlen[j]) NEWLINE
-END
-
-# Ensure problem IDs are unique (Python validator will also tighten semantics).
-ASSERT(UNIQUE(p_id))
-
-EOF
+# Then N lines, each with:
+# id (int), points (int), difficulty (int), topic (string), length (int)
+repeat N:
+    int int int token int

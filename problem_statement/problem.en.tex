@@ -71,20 +71,32 @@ to do so while trying to:
 
 \section*{Input}
 
-The first line contains two integers $M$ and $N$, which are the minimum total points needed for full score and the number of problems on an assignment, respectively. Note that $M$ can, and will be quite large, prepare for inputs where $M\geq 10^{20}$.
+The first line contains two integers $M$ and $N$, representing the minimum number of points required for full marks and the number of available problems on this assignment. Note that $M$ may be very large (e.g., $M \ge 10^{20}$).
 
 \bigskip
 
-\noindent The next line contains a list of distinct strings: a variety of problem topics ranked from your best understanding to your worst understanding.
+\noindent
+The second line contains a list of distinct strings, each representing a topic. The list is ordered from the topic you understand best to the one you understand least.
 
 \bigskip
 
-\noindent The following $N$ lines describes the problems on the assignment in the following format:
+\noindent
+The following $N$ lines describe the problems. Each problem is given in the format:
 
-$$\texttt{Problem\_No.}\;\;\;\;\;\;\texttt{Points}\;\;\;\;\;\;\texttt{Difficulty}\;\;\;\;\;\;\texttt{Topic}\;\;\;\;\;\;\texttt{Text\_Length}$$
+\[
+\texttt{Problem\_No. \quad Points \quad Difficulty \quad Topic \quad Text\_Length}
+\]
 
+\noindent
+Here:
+\begin{itemize}
+    \item \texttt{Problem\_No.} is an integer in $[1, N]$.
+    \item \texttt{Points} is a non-negative integer representing how many points the problem is worth. (It is not required to be $\le M$.)
+    \item \texttt{Difficulty} is an integer rating from $1$ to $10$, with larger values indicating harder problems.
+    \item \texttt{Topic} is a non-empty string (no spaces) indicating the assigned topic of the problem. Every topic must appear in the topic list on the second line.
+    \item \texttt{Text\_Length} is an integer between $1$ and $10^4$ representing the number of words in the problem statement.
+\end{itemize}
 
-\noindent Where ``\texttt{Problem\_No}" $\in [1,N]$, is the problem number on the list of questions, ``\texttt{Points}"$\in[0,M]$ is the number of points that problem is worth,  ``\texttt{Difficulty}" $\in[1.0,10.0]$ is the difficulty rating of the problem (larger rating means more difficult), ``\texttt{topic}" is a non-empty string without spaces (assume exactly one topic is assigned to each problem) which is the topic the problem is assigned to, and finally, $1\leq \texttt{Text\_Length} \leq 10^4$ is the number of words in the problem statement. 
 
 \section*{Output}
 
