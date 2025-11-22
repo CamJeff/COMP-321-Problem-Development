@@ -1,53 +1,60 @@
-# Sample Input Validators #
+README – Input Validators for COMP 321 Problem Selector
 
-This directory contains two a sample input validators for a fake problem,
-written in both Python 3 and in the checktestdata validation language (see:
-https://github.com/DOMjudge/checktestdata/blob/master/doc/format-spec.md).
+This directory contains two input validators for the problem
 
-You can validate syntax using checktestdata, Python, or another supported
-programming language.  You can separate the validation of syntax and other
-properties (e.g. graph connectedness) across different validators if you wish.
-For example, it may be easiest to use checktestdata to validate syntax, and
-Python to check more complicated properties. The important thing is that
-everything that needs validation is validated.
+Both validators work together to fully verify that the input is properly
+formatted and satisfies all constraints.
 
-Please use these validators as you like. Modify them as needed for your
-problem's input syntax.
+------------------------------------------------------------
+validate.ctd
+------------------------------------------------------------
 
-Some important general things to remember are:
-- Verify the syntax of all input, strictly, using something like
-  carefully-written regular expressions. Checktestdata makes this easier.
-- When verifying strings, verify length and character sets (e.g. lowercase a-z).
-- When verifying integers and real numbers, ensure no leading zeros on
-  non-zero numbers (to prevent arbitrarily long tokens).
-- When verifying real numbers, ensure a maximum number of digits given after
-  the decimal point (again, to prevent arbitrarily long tokens).
-- Ensure there is no extra input (e.g. extra spaces, or extra blank lines).
-- Make sure that every input constraint is checked, beyond just syntax when
-  necessary. For example, if an input promises $k$ unique points, verify that
-  they are unique; if a graph is promised to be connected, verify that it is.
-- In some circumstances, you may need to actually solve the problem to verify
-  some guarantee of the problem. The best way to do this is usually to copy a
-  judge's solution here, and modify it so that it is an input validator.
-- If you are using a general-purpose programming language, exit with code 42 to
-  indicate success.
-- Indicate failure by exiting with a non-42 exit code, asserting, etc.
+This file is written in the checktestdata (CTD) language and performs
+STRUCTURAL / SYNTAX validation only.
 
-This sample input validator is just for instructional purposes. It assumes
-that the (fake) problem has an input syntax as follows:
-1. The first line of input contains an integer $n$ indicating the number of
-   cases that follow, where 1 <= n <= 100.
-2. Each of the following $n$ lines has one case.
-3. Each case has a string of 1-20 characters (using only a-z), a single
-   space, an integer in the range [-100, 100], then a real number in the
-   range [-10.0, 10.0] with an optional fractional portion of at most 3
-   digits after the decimal point. All strings are required to be unique.
+It checks:
 
-Here's a sample input which should pass these sample validators:
-```
-3
-foo -31 3.141
-bar 41 2.171
-baz 59 0.3
-```
+- First line contains:
+    - M: a non-negative integer (very large allowed)
+    - N: a positive integer (number of problems)
 
+- Second line:
+    - Exists and contains only non-newline characters
+    - (Topic correctness and uniqueness are handled in Python)
+
+- Next N lines, each containing:
+    - Problem ID: positive integer
+    - Points: non-negative integer
+    - Difficulty: integer in range 1 to 10
+    - Topic: a non-empty string without whitespace
+    - Text length: integer in range 1 to 10000
+
+- Ensures there are exactly N problem lines
+- Ensures all problem IDs are unique
+- Ensures there is no extra data after the last line
+
+This file does NOT check semantic constraints such as:
+- problem IDs being in the range 1..N
+- points being <= M
+- topic preference ranking rules
+- permutation correctness
+
+------------------------------------------------------------
+validate.py
+------------------------------------------------------------
+
+This file performs SEMANTIC / LOGIC validation in Python and exits
+with code 42 if (and only if) the input is valid.
+
+It checks:
+
+- Strict formatting of all lines (no extra spaces, no leading zeros, etc.)
+- N >= 1 and M >= 0
+- The preferred topic list contains no duplicates
+- Each problem line is correctly formatted
+- Each problem ID is in [1, N]
+- Problem IDs form a valid permutation (each appears exactly once)
+- Each point value is in [0, M]
+- Difficulty is in [1, 10]
+- Text length is in [1, 10000]
+- No extra input exists beyond what is expected
