@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{array}
+\usepackage{wrapfig}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage[most]{tcolorbox}
 
@@ -29,12 +30,21 @@
 
 \begin{document}
 
-\problemname{Title of the Problem Here}
+\problemname{Procrastination Optimization}
 
 % Example use of the \illustration command
 % \illustration{0.3}{filename.jpg}{Photo by \href{url_here}{link text here, e.g. author name}}
 
-You want to write a program that will allow you to optimize the Kattis problems you select when completing your COMP 321 assignments. For each assignment, you only need to answer a subset of the listed questions to reach full marks. Each problem has a:
+\begin{wrapfigure}{r}{0.35\textwidth}
+    \centering
+    \vspace{-15pt}
+    \includegraphics[width=\linewidth]{Im.png}
+    \vspace{5pt} 
+\end{wrapfigure}
+
+You want to write a program that will allow you to optimize the Kattis problems you 
+select when completing your COMP 321 assignments. For each assignment, you only need 
+to answer a subset of the listed questions to reach full marks. Each problem has a:
 
 \begin{itemize}
     \item Point value (some positive integer)
@@ -43,26 +53,29 @@ You want to write a program that will allow you to optimize the Kattis problems 
     \item Text length (number of words)
 \end{itemize}
 
-Although you’re a lazy student, you still care about your grades, and so you want to achieve full marks on your assignment while putting in the least amount of effort possible. On a given assignment, you need to attain at least $M$ points, and you want to do so while trying to:
+\noindent Although you’re a lazy student, you still care about your grades, and so you want 
+to achieve full marks on your assignment while putting in the least amount of effort 
+possible. On a given assignment, you need to attain at least $M$ points, and you want 
+to do so while trying to:
 
 
 \begin{enumerate}
     \item Minimize the total difficulty of the chosen problems first, then
     \item Minimize the number of problems solved. Then,
-    \item Align the topics of the problem with concepts you are most comfortable with. Then finally,
+    \item Align the topics of the problems with concepts you have the best understanding of. Then finally,
     \item Minimize the total length of text read
 \end{enumerate}
 
-These requirements are listed in preferential order. That is, you first and foremost want to minimize the difficulty of questions you select. If there are still some choices for question subsets, then you can narrow it down further by minimizing the number of points solved, and work down to the least pressing requirement, which is minimizing the total length of text you read.
+\noindent These requirements are listed in preferential order. That is, you first and foremost want to minimize the difficulty of questions you select. If there are still some choices for question subsets, then you can narrow it down further by minimizing the number of points solved, and work down to the least pressing requirement, which is minimizing the total length of text you read.
 
 
 \section*{Input}
 
-The first line contains three integers $M$, $N$, and $K$, which are the minimum total points needed for full score, the number of problems on an assignment, and the number of topics in your personal preference list, respectively.
+The first line contains two integers $M$ and $N$, which are the minimum total points needed for full score and the number of problems on an assignment, respectively. Note that $M$ can, and will be quite large, prepare for inputs where $M\geq 10^{20}$.
 
 \bigskip
 
-The next line contains $K$ distinct strings: the topics ranked from best to worst.
+\noindent The next line contains a list of distinct strings: a variety of problem topics ranked from your best understanding to your worst understanding.
 
 \bigskip
 
@@ -85,7 +98,7 @@ One line, containing the problem numbers, separated by spaces, that you choose i
   \begin{minipage}[t]{0.48\linewidth}
     \textbf{Sample Input 1}\\[4pt]
     \begin{tcolorbox}[samplebox]
-      \texttt{10 4 2\\
+      \texttt{10 4\\
       dp graphs arrays\\
       1 5 3 dp 120\\
       2 6 5 graphs 200\\
@@ -108,11 +121,11 @@ One line, containing the problem numbers, separated by spaces, that you choose i
 
 
 \begin{center}
-  % Sample Input 1
+  % Sample Input 2
   \begin{minipage}[t]{0.48\linewidth}
     \textbf{Sample Input 2}\\[4pt]
     \begin{tcolorbox}[samplebox]
-      \texttt{10 3 3 \\
+      \texttt{10 3 \\
 stacks queues trees \\
 1 2 1 stacks 100 \\
 2 2 1 stacks 100 \\
@@ -121,11 +134,38 @@ stacks queues trees \\
     \end{tcolorbox}
   \end{minipage}
   \hfill
-  % Sample Output 1
+  % Sample Output 2
   \begin{minipage}[t]{0.48\linewidth}
     \textbf{Sample Output 2}\\[4pt]
     \begin{tcolorbox}[samplebox]
       \texttt{3}
+    \end{tcolorbox}
+  \end{minipage}
+\end{center}
+
+\bigskip
+
+
+\begin{center}
+  % Sample Input 3
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Sample Input 3}\\[4pt]
+    \begin{tcolorbox}[samplebox]
+      \texttt{100000000000000 4 \\
+greedy dijkstra strings \\
+1 60000000000000 3 greedy 5000 \\
+2 50000000000000 2 dijkstra 8000 \\
+3 40000000000000 1 strings 2000 \\
+4 70000000000000 5 greedy 10000
+}
+    \end{tcolorbox}
+  \end{minipage}
+  \hfill
+  % Sample Output 3
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Sample Output 3}\\[4pt]
+    \begin{tcolorbox}[samplebox]
+      \texttt{1 3}
     \end{tcolorbox}
   \end{minipage}
 \end{center}
