@@ -85,7 +85,7 @@ def main():
         except:
             error("Difficulty must be an integer")
         if diff < 1 or diff > 10:
-            error(""Difficulty must be between 1-10"")
+            error("Difficulty must be between 1-10")
 
         # topic must be in the topic list
         if topic_str not in topics:

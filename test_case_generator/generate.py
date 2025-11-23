@@ -12,6 +12,7 @@ RANDOM_SEED = 321321
 MAX_M = 10**15
 MAX_N = 25
 NUM_SECRET = 20
+SOLVER_TIMEOUT = 20
 
 # ---------------------------------------------------------
 # Helpers
@@ -25,14 +26,20 @@ def run_solver_and_write(in_path, ans_path, solver_cmd):
     with open(in_path, "r") as f:
         inp = f.read()
 
-    proc = subprocess.run(
-        solver_cmd,
-        input=inp.encode(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    try:
+        proc = subprocess.run(
+            solver_cmd,
+            input=inp.encode(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=SOLVER_TIMEOUT   # <<<<<< timeout here
+        )
+        out = proc.stdout.decode().rstrip() + "\n"
 
-    out = proc.stdout.decode().rstrip() + "\n"
+    except subprocess.TimeoutExpired:
+        # If solver takes too long, mark as TLE (-1)
+        out = "-1\n"
+
     with open(ans_path, "w") as f:
         f.write(out)
 
@@ -43,7 +50,6 @@ def save_case(dir_path, base_name, case_text, solver_cmd):
     ans_path = dir_path / f"{base_name}.ans"
     write_case(in_path, case_text)
     run_solver_and_write(in_path, ans_path, solver_cmd)
-
 # ---------------------------------------------------------
 # PDF Samples (fixed)
 # ---------------------------------------------------------
