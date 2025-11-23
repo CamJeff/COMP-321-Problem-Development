@@ -78,9 +78,7 @@ For each problem line, the validator checks:
     - May be larger than M (this is allowed).
 
 - difficulty:
-    - Must be an integer.
-    - Must be non-negative (difficulty >= 0).
-      (No upper bound is enforced here.)
+    - Must be an integer between 1-10
 
 - topic:
     - Must be one of the topics listed on line 2.
