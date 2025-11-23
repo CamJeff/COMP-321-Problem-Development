@@ -3,35 +3,28 @@ import sys
 import random
 import subprocess
 from pathlib import Path
-import resource   # <-- for memory limit
-
 # ---------------------------------------------------------
-# Config
+# Global Config
 # ---------------------------------------------------------
 
 RANDOM_SEED = 321321
 MAX_M = 10**15
-MAX_N = 25
-NUM_SECRET = 20
-SOLVER_TIMEOUT = 20              # seconds
-SOLVER_MEM_LIMIT = 2 * 1024**3   # 2GB
+NUM_RANDOM = 10
+NUM_EDGE = 10
+SOLVER_TIMEOUT = 20   # 20 seconds
+
 
 # ---------------------------------------------------------
-# Helpers
+# Utility
 # ---------------------------------------------------------
 
-def set_memory_limit():
-    """Limit memory usage for the solver process (Linux/macOS)."""
-    resource.setrlimit(resource.RLIMIT_AS,
-                       (SOLVER_MEM_LIMIT, SOLVER_MEM_LIMIT))
+def write_file(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
+        f.write(text)
 
-
-def write_case(in_path, case_text):
-    with open(in_path, "w") as f:
-        f.write(case_text)
-
-
-def run_solver_and_write(in_path, ans_path, solver_cmd):
+def run_solver(in_path, ans_path, solver_cmd):
+    """Run accepted solver on in_path with timeout."""
     with open(in_path, "r") as f:
         inp = f.read()
 
@@ -41,31 +34,24 @@ def run_solver_and_write(in_path, ans_path, solver_cmd):
             input=inp.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=SOLVER_TIMEOUT,
-            preexec_fn=set_memory_limit  # <<<<<< memory limit added
+            timeout=SOLVER_TIMEOUT
         )
         out = proc.stdout.decode().rstrip() + "\n"
-
     except subprocess.TimeoutExpired:
-        out = "-1\n"    # TLE → -1
-    except MemoryError:
-        out = "-1\n"    # hard fail → treat as MLE
-    except Exception:
         out = "-1\n"
 
     with open(ans_path, "w") as f:
         f.write(out)
 
+def save_case(directory, base, text, solver_cmd):
+    in_path = directory / (base + ".in")
+    ans_path = directory / (base + ".ans")
+    write_file(in_path, text)
+    run_solver(in_path, ans_path, solver_cmd)
 
-def save_case(dir_path, base_name, case_text, solver_cmd):
-    dir_path.mkdir(parents=True, exist_ok=True)
-    in_path = dir_path / f"{base_name}.in"
-    ans_path = dir_path / f"{base_name}.ans"
-    write_case(in_path, case_text)
-    run_solver_and_write(in_path, ans_path, solver_cmd)
 
 # ---------------------------------------------------------
-# PDF Samples (fixed)
+# Sample Inputs (from PDF)
 # ---------------------------------------------------------
 
 PDF_SAMPLE_1 = """10 4
@@ -91,8 +77,9 @@ greedy dijkstra strings
 4 70000000000000 5 greedy 10000
 """
 
+
 # ---------------------------------------------------------
-# Secret Case Generators
+# Secret Tests — Random (deterministic)
 # ---------------------------------------------------------
 
 BASE_TOPICS = [
@@ -100,68 +87,282 @@ BASE_TOPICS = [
     "greedy", "arrays", "heaps", "math", "strings"
 ]
 
-def random_topics():
-    k = random.randint(1, 5)
-    return random.sample(BASE_TOPICS, k)
+def make_random_case():
+    N = random.randint(15, 25)
+    topics = random.sample(BASE_TOPICS, random.randint(3, 6))
 
-def random_problems(N, topics):
     problems = []
-    for pid in range(1, N + 1):
+    total = 0
+
+    for pid in range(1, N+1):
         pts = random.randint(1, 10**12)
-        diff = random.randint(0, 10)
+        diff = random.randint(1, 10)
         topic = random.choice(topics)
         length = random.randint(10, 2000)
+
         problems.append((pid, pts, diff, topic, length))
-    return problems
+        total += pts
 
-def build_case(M, topics, problems):
-    lines = []
-    N = len(problems)
-    lines.append(f"{M} {N}")
-    lines.append(" ".join(topics))
-    for pid, pts, diff, topic, length in problems:
-        lines.append(f"{pid} {pts} {diff} {topic} {length}")
-    return "\n".join(lines) + "\n"
+    # M chosen as mixed reachable/unreachable
+    M = random.randint(1, total)
 
-def make_secret_reachable():
-    N = random.randint(5, MAX_N)
-    topics = random_topics()
-    problems = random_problems(N, topics)
-    total_points = sum(p[1] for p in problems)
-    max_points = max(p[1] for p in problems)
-    M = random.randint(max_points, total_points)
-    return build_case(M, topics, problems)
+    out = []
+    out.append(f"{M} {N}")
+    out.append(" ".join(topics))
+    for p in problems:
+        pid, pts, diff, topic, length = p
+        out.append(f"{pid} {pts} {diff} {topic} {length}")
 
-def make_secret_unreachable():
-    N = random.randint(5, MAX_N)
-    topics = random_topics()
-    problems = random_problems(N, topics)
-    total_points = sum(p[1] for p in problems)
-    max_points = max(p[1] for p in problems)
-    extra = random.randint(1, max_points)
-    M = min(total_points + extra, MAX_M)
-    return build_case(M, topics, problems)
+    return "\n".join(out) + "\n"
+
 
 # ---------------------------------------------------------
-# Generate Samples (PDF version)
+# 10 Hand-Written Edge Cases (Secret 11–20)
 # ---------------------------------------------------------
 
-def generate_samples(sample_dir, solver_cmd):
-    save_case(sample_dir, "sample1", PDF_SAMPLE_1, solver_cmd)
-    save_case(sample_dir, "sample2", PDF_SAMPLE_2, solver_cmd)
-    save_case(sample_dir, "sample3", PDF_SAMPLE_3, solver_cmd)
+EDGE_CASES = {}
 
-# ---------------------------------------------------------
-# Generate Secrets
-# ---------------------------------------------------------
+EDGE_CASES["secret11"] = """500 25
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 200 2 dp 500
+2 150 3 graphs 400
+3 180 4 trees 350
+4 50 1 stacks 300
+5 60 1 queues 250
+6 70 2 greedy 200
+7 40 1 arrays 180
+8 30 2 heaps 160
+9 25 1 math 140
+10 20 2 strings 130
+11 15 1 dp 120
+12 14 1 graphs 110
+13 13 1 trees 100
+14 12 1 stacks 95
+15 11 1 queues 90
+16 10 1 greedy 85
+17 9 1 arrays 80
+18 8 1 heaps 75
+19 7 1 math 70
+20 6 1 strings 65
+21 5 1 dp 60
+22 4 1 graphs 55
+23 3 1 trees 50
+24 2 1 stacks 45
+25 1 1 queues 40
+"""
 
-def generate_secrets(secret_dir, solver_cmd):
-    for i in range(1, NUM_SECRET + 1):
-        if i % 2 == 0:
-            case_text = make_secret_reachable()
-        else:
-            case_text = make_secret_unreachable()
-        save_case(secret_dir, f"secret{i:02d}", case_text, solver_cmd)
+EDGE_CASES["secret12"] = """1500000000000000 18
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 300000000000000 5 dp 500
+2 250000000000000 4 graphs 480
+3 200000000000000 4 trees 460
+4 180000000000000 3 stacks 440
+5 150000000000000 3 queues 420
+6 140000000000000 3 greedy 400
+7 130000000000000 2 arrays 380
+8 120000000000000 2 heaps 360
+9 110000000000000 2 math 340
+10 100000000000000 1 strings 320
+11 90000000000000  1 dp 300
+12 80000000000000  1 graphs 290
+13 70000000000000  1 trees 280
+14 60000000000000  1 stacks 270
+15 50000000000000  1 queues 260
+16 40000000000000  1 greedy 250
+17 30000000000000  1 arrays 240
+18 20000000000000  1 heaps 230
+"""
+
+EDGE_CASES["secret13"] = """120 18
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 7 3 dp 200
+2 6 3 graphs 180
+3 8 3 trees 160
+4 5 3 stacks 210
+5 9 3 queues 190
+6 7 3 greedy 170
+7 8 3 arrays 160
+8 6 3 heaps 150
+9 9 3 math 140
+10 5 3 strings 130
+11 7 3 dp 200
+12 6 3 graphs 180
+13 8 3 trees 160
+14 5 3 stacks 210
+15 9 3 queues 195
+16 7 3 greedy 170
+17 8 3 arrays 165
+18 6 3 heaps 155
+""" 
+
+EDGE_CASES["secret14"] = """180 25
+dp graphs trees stacks queues greedy arrays heaps math strings
+""" + "\n".join([f"{i} 60 3 {BASE_TOPICS[(i-1)%10]} 200" for i in range(1,10)]) + """
+""" + "\n".join([f"{i} 30 3 {BASE_TOPICS[(i-1)%10]} 150" for i in range(10,20)]) + """
+""" + "\n".join([f"{i} 10 3 {BASE_TOPICS[(i-1)%10]} 100" for i in range(20,26)]) + "\n"
+
+EDGE_CASES["secret15"] = """200 25
+dp
+1 50 2 dp 2000
+2 60 2 dp 1900
+3 70 2 dp 1800
+4 80 2 dp 1700
+5 40 2 dp 1600
+6 30 2 dp 1500
+7 20 2 dp 1400
+8 25 2 dp 1300
+9 35 2 dp 1200
+10 45 2 dp 1100
+11 15 2 dp 1000
+12 18 2 dp 900
+13 22 2 dp 800
+14 29 2 dp 700
+15 33 2 dp 600
+16 37 2 dp 500
+17 41 2 dp 400
+18 44 2 dp 300
+19 48 2 dp 200
+20 52 2 dp 100
+21 5 2 dp 90
+22 8 2 dp 80
+23 10 2 dp 70
+24 12 2 dp 60
+25 14 2 dp 50
+"""
+
+EDGE_CASES["secret16"] = """220 20
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 40 3 dp 200
+2 35 3 graphs 190
+3 30 3 trees 185
+4 28 4 stacks 180
+5 27 4 queues 175
+6 10 2 greedy 150
+7 10 2 arrays 145
+8 9 2 heaps 140
+9 9 2 math 135
+10 8 2 strings 130
+11 7 2 dp 120
+12 7 2 graphs 115
+13 6 2 trees 110
+14 6 2 stacks 105
+15 5 2 queues 100
+16 4 1 greedy 90
+17 4 1 arrays 80
+18 4 1 heaps 70
+19 3 1 math 60
+20 3 1 strings 50
+"""
+
+EDGE_CASES["secret17"] = """500000000000 25
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 300000000000 4 dp 2000
+2 250000000000 3 graphs 1900
+3 200000000000 5 trees 1800
+4 100000000000 2 stacks 1700
+5 150000000000 3 queues 1600
+6 120000000000 2 greedy 1500
+7 110000000000 4 arrays 1400
+8 90000000000 5 heaps 1300
+9 80000000000 3 math 1200
+10 70000000000 2 strings 1100
+11 60000000000 2 dp 1000
+12 50000000000 3 graphs 900
+13 40000000000 3 trees 800
+14 30000000000 4 stacks 700
+15 20000000000 5 queues 600
+16 18000000000 1 greedy 500
+17 16000000000 1 arrays 450
+18 14000000000 1 heaps 400
+19 12000000000 1 math 350
+20 10000000000 1 strings 300
+21 9000000000 1 dp 260
+22 8000000000 1 graphs 240
+23 7000000000 1 trees 220
+24 6000000000 1 stacks 200
+25 5000000000 1 queues 180
+"""
+
+EDGE_CASES["secret18"] = """300000000000000 25
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 80000000000000 4 dp 500
+2 70000000000000 5 graphs 480
+3 60000000000000 3 trees 460
+4 50000000000000 3 stacks 440
+5 40000000000000 2 queues 420
+6 30000000000000 1 greedy 400
+7 25000000000000 2 arrays 380
+8 20000000000000 1 heaps 360
+9 18000000000000 1 math 340
+10 16000000000000 1 strings 320
+11 14000000000000 2 dp 300
+12 13000000000000 2 graphs 290
+13 12000000000000 3 trees 280
+14 11000000000000 3 stacks 270
+15 10000000000000 1 queues 260
+16 9000000000000 1 greedy 250
+17 8000000000000 1 arrays 240
+18 7000000000000 1 heaps 230
+19 6000000000000 1 math 220
+20 5000000000000 1 strings 210
+21 4000000000000 1 dp 200
+22 3000000000000 1 graphs 190
+23 2000000000000 1 trees 180
+24 1000000000000 1 stacks 170
+25 900000000000 1 queues 160
+"""
+
+EDGE_CASES["secret19"] = """300 25
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 100 5 dp 500
+2 100 5 graphs 450
+3 100 5 trees 480
+4 90 5 stacks 430
+5 90 5 queues 420
+6 80 5 greedy 410
+7 80 5 arrays 400
+8 70 5 heaps 390
+9 70 5 math 380
+10 60 5 strings 370
+11 50 5 dp 360
+12 50 5 graphs 350
+13 50 5 trees 340
+14 40 5 stacks 330
+15 40 5 queues 320
+16 40 5 greedy 310
+17 30 5 arrays 300
+18 30 5 heaps 290
+19 30 5 math 280
+20 30 5 strings 270
+21 20 5 dp 260
+22 20 5 graphs 250
+23 20 5 trees 240
+24 20 5 stacks 230
+25 20 5 queues 220
+"""
+
+EDGE_CASES["secret20"] = """260 18
+dp graphs trees stacks queues greedy arrays heaps math strings
+1 60 3 dp      300
+2 55 3 graphs  280
+3 50 4 trees   260
+4 45 4 stacks  240
+5 40 5 queues  230
+6 20 2 greedy  200
+7 18 2 arrays  195
+8 17 2 heaps   190
+9 15 2 math    185
+10 14 2 strings 180
+11 12 1 dp      160
+12 12 1 graphs  150
+13 10 1 trees   140
+14 10 1 stacks  130
+15 9  1 queues  120
+16 8  1 greedy  100
+17 7  1 arrays   90
+18 6  1 heaps    80
+"""
+
 
 # ---------------------------------------------------------
 # Main
@@ -179,13 +380,25 @@ def main():
     solver_path = root_dir / "submissions" / "accepted" / "solution.py"
     solver_cmd = [sys.executable, str(solver_path)]
 
+    # 1. Samples
     print("Generating sample cases...")
-    generate_samples(sample_dir, solver_cmd)
+    save_case(sample_dir, "sample1", PDF_SAMPLE_1, solver_cmd)
+    save_case(sample_dir, "sample2", PDF_SAMPLE_2, solver_cmd)
+    save_case(sample_dir, "sample3", PDF_SAMPLE_3, solver_cmd)
 
-    print("Generating secret cases...")
-    generate_secrets(secret_dir, solver_cmd)
+    # 2. 10 Random secret tests
+    print("Generating random secret cases...")
+    for i in range(1, NUM_RANDOM+1):
+        case = make_random_case()
+        save_case(secret_dir, f"secret{i:02d}", case, solver_cmd)
 
-    print("Done.")
+    # 3. 10 Hand-written secret tests
+    print("Generating hand-written secret cases...")
+    for idx, name in enumerate(EDGE_CASES.keys(), start=NUM_RANDOM+1):
+        save_case(secret_dir, f"secret{idx:02d}", EDGE_CASES[name], solver_cmd)
+
+    print("Done!")
+
 
 if __name__ == "__main__":
     main()
