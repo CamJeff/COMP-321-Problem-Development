@@ -20,7 +20,7 @@ def main():
         error("Input too short")
 
     # -----------------------------------------
-    # Line 1: M N   (NO K, matching PDF)
+    # Line 1: M N   (matching final PDF format)
     # -----------------------------------------
     try:
         M, N = map(int, data[0].split())
@@ -36,7 +36,7 @@ def main():
     # Line 2: topic strings (distinct)
     # -----------------------------------------
     topics = data[1].split()
-    if len(topics) == 0:
+    if not topics:
         error("At least one topic required")
 
     if len(topics) != len(set(topics)):
@@ -58,12 +58,11 @@ def main():
 
         pid_str, pts_str, diff_str, topic_str, length_str = parts
 
-        # id must be integer
+        # id must be integer > 0
         try:
             pid = int(pid_str)
         except:
             error("Problem id must be an integer")
-
         if pid <= 0:
             error("Problem id must be positive")
 
@@ -71,7 +70,7 @@ def main():
             error("Duplicate problem id")
         seen_ids.add(pid)
 
-        # points: any non-negative integer (CAN be > M)
+        # points: any non-negative integer (can be > M)
         try:
             pts = int(pts_str)
         except:
@@ -79,15 +78,15 @@ def main():
         if pts < 0:
             error("Points must be non-negative")
 
-        # difficulty: non-negative integer
+        # difficulty: integer 1–10 (matching the statement & samples)
         try:
             diff = int(diff_str)
         except:
             error("Difficulty must be an integer")
-        if diff < 1 or diff > 10:
-            error("Difficulty must be between 1-10")
+        if not (1 <= diff <= 10):
+            error("Difficulty must be between 1 and 10")
 
-        # topic must be in the topic list
+        # topic must be in topic list
         if topic_str not in topics:
             error("Problem topic must appear in topic list")
 
@@ -99,7 +98,7 @@ def main():
         if length < 0:
             error("Length must be non-negative")
 
-    # If all checks pass:
+    # Valid input
     return
 
 if __name__ == "__main__":

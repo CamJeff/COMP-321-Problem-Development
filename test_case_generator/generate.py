@@ -3,6 +3,7 @@ import sys
 import random
 import subprocess
 from pathlib import Path
+import resource   # <-- for memory limit
 
 # ---------------------------------------------------------
 # Config
@@ -12,15 +13,23 @@ RANDOM_SEED = 321321
 MAX_M = 10**15
 MAX_N = 25
 NUM_SECRET = 20
-SOLVER_TIMEOUT = 20
+SOLVER_TIMEOUT = 20              # seconds
+SOLVER_MEM_LIMIT = 2 * 1024**3   # 2GB
 
 # ---------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------
 
+def set_memory_limit():
+    """Limit memory usage for the solver process (Linux/macOS)."""
+    resource.setrlimit(resource.RLIMIT_AS,
+                       (SOLVER_MEM_LIMIT, SOLVER_MEM_LIMIT))
+
+
 def write_case(in_path, case_text):
     with open(in_path, "w") as f:
         f.write(case_text)
+
 
 def run_solver_and_write(in_path, ans_path, solver_cmd):
     with open(in_path, "r") as f:
@@ -32,12 +41,16 @@ def run_solver_and_write(in_path, ans_path, solver_cmd):
             input=inp.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=SOLVER_TIMEOUT   # <<<<<< timeout here
+            timeout=SOLVER_TIMEOUT,
+            preexec_fn=set_memory_limit  # <<<<<< memory limit added
         )
         out = proc.stdout.decode().rstrip() + "\n"
 
     except subprocess.TimeoutExpired:
-        # If solver takes too long, mark as TLE (-1)
+        out = "-1\n"    # TLE → -1
+    except MemoryError:
+        out = "-1\n"    # hard fail → treat as MLE
+    except Exception:
         out = "-1\n"
 
     with open(ans_path, "w") as f:
@@ -50,6 +63,7 @@ def save_case(dir_path, base_name, case_text, solver_cmd):
     ans_path = dir_path / f"{base_name}.ans"
     write_case(in_path, case_text)
     run_solver_and_write(in_path, ans_path, solver_cmd)
+
 # ---------------------------------------------------------
 # PDF Samples (fixed)
 # ---------------------------------------------------------
