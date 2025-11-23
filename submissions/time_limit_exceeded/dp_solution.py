@@ -1,9 +1,9 @@
 """
-Time Limit Exceeded Solution - DP
+Memory Limit Exceeded Solution - DP
 This solution tries to solve the problem using a knapsack-style dp approach.
 However, the magnitude of the points (integers of size 10^15), the dp table
 will grow exponentially because almost every combination of problems produces a unique 
-point total. Iterating through this massive table for every single problem becomes too slow.
+point total. This causes the memory to fill up.
 """
 import time
 def solve():
