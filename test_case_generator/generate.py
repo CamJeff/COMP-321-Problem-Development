@@ -95,10 +95,10 @@ def make_random_case():
     total = 0
 
     for pid in range(1, N+1):
-        pts = random.randint(1, 10**12)
+        pts = random.randint(1, 10**15)
         diff = random.randint(1, 10)
         topic = random.choice(topics)
-        length = random.randint(10, 2000)
+        length = random.randint(10, 1000)
 
         problems.append((pid, pts, diff, topic, length))
         total += pts
