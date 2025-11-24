@@ -27,10 +27,10 @@ def main():
     except:
         error("First line must contain two integers M N")
 
-    if M < 0:
-        error("M must be non-negative")
-    if N < 0:
-        error("N must be non-negative")
+    if M < 0 or M > 1e15:
+        error("M out of range"")
+    if N < 0 or N > 15:
+        error("N out of range")
 
     # -----------------------------------------
     # Line 2: topic strings (distinct)
