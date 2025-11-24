@@ -51,8 +51,8 @@ entire input and enforces the following:
 General:
 - Input must contain at least 2 lines (first line and topic line).
 - First line must contain exactly two integers: M and N.
-- M must be non-negative (M >= 0).
-- N must be non-negative (N >= 0).
+- M must be in range: 1 <= M <= 10^15.
+- N must be in range: 1 <= N <= 25.
 - The total number of lines must be exactly 2 + N
   (i.e., N problem lines after the topics line).
 
