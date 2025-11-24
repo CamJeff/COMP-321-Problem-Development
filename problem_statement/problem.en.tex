@@ -71,7 +71,7 @@ to do so while trying to:
 
 \section*{Input}
 
-The first line contains two integers $M$ and $N$, representing the minimum number of points required for full marks and the number of available problems on this assignment. Note that $M$ may be very large (e.g., $M \ge 10^{20}$).
+The first line contains two integers $M$ and $N$, representing the minimum number of points required for full marks and the number of available problems on this assignment, where $1\leq N\leq 20$, and $1\leq M\leq 10^{15}$.
 
 \bigskip
 
@@ -100,7 +100,7 @@ Here:
 
 \section*{Output}
 
-One line, containing the problem numbers, separated by spaces, that you choose in order to complete your assignment under the above conditions. If no subset of problems can achieve at least $M$ points, output $-1$. 
+One line, containing the problem numbers, separated by spaces, that you choose in order to complete your assignment under the above conditions. Assume there is \textit{always} a subset of questions in the problem list where it is possible to achieve full marks.
 
 \bigskip
 
@@ -181,9 +181,3 @@ greedy dijkstra strings \\
     \end{tcolorbox}
   \end{minipage}
 \end{center}
-
-
-
-
-
-\end{document}
