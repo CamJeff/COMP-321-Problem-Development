@@ -11,7 +11,6 @@ RANDOM_SEED = 321321
 MAX_M = 10**15
 NUM_RANDOM = 10
 NUM_EDGE = 10
-SOLVER_TIMEOUT = 20   # 20 seconds
 
 
 # ---------------------------------------------------------
@@ -34,7 +33,6 @@ def run_solver(in_path, ans_path, solver_cmd):
             input=inp.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=SOLVER_TIMEOUT
         )
         out = proc.stdout.decode().rstrip() + "\n"
     except subprocess.TimeoutExpired:
