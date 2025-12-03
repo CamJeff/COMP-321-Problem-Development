@@ -3,12 +3,12 @@ import sys
 import random
 import subprocess
 from pathlib import Path
+
 # ---------------------------------------------------------
 # Global Config
 # ---------------------------------------------------------
 
 RANDOM_SEED = 321321
-MAX_M = 10**15
 NUM_RANDOM = 10
 NUM_EDGE = 10
 
@@ -23,20 +23,17 @@ def write_file(path, text):
         f.write(text)
 
 def run_solver(in_path, ans_path, solver_cmd):
-    """Run accepted solver on in_path with timeout."""
+    """Run accepted solver (no timeout)."""
     with open(in_path, "r") as f:
         inp = f.read()
 
-    try:
-        proc = subprocess.run(
-            solver_cmd,
-            input=inp.encode(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        out = proc.stdout.decode().rstrip() + "\n"
-    except subprocess.TimeoutExpired:
-        out = "-1\n"
+    proc = subprocess.run(
+        solver_cmd,
+        input=inp.encode(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    out = proc.stdout.decode().rstrip() + "\n"
 
     with open(ans_path, "w") as f:
         f.write(out)
@@ -77,7 +74,7 @@ greedy dijkstra strings
 
 
 # ---------------------------------------------------------
-# Secret Tests — Random (deterministic)
+# Secret Tests — Random (FAST VERSION)
 # ---------------------------------------------------------
 
 BASE_TOPICS = [
@@ -86,29 +83,37 @@ BASE_TOPICS = [
 ]
 
 def make_random_case():
-    N = random.randint(15, 25)
-    topics = random.sample(BASE_TOPICS, random.randint(3, 6))
+    """
+    Random case with proper 10% rule:
+    - N = 50–60
+    - All topics = 10 topics
+    - Base point P chosen first
+    - Every problem has pts >= 10% M (guaranteed)
+    """
+    N = random.randint(50, 60)
+    topics = BASE_TOPICS[:]
+
+    # Step 1: choose base point P
+    P = random.randint(10**10, 5 * 10**10)
 
     problems = []
-    total = 0
 
+    # Step 2: generate problems with pts >= P (later we ensure M <= 8P)
     for pid in range(1, N+1):
-        pts = random.randint(1, 10**15)
-        diff = random.randint(1, 10)
+        pts = random.randint(P, 3*P)
+        diff = random.randint(5, 10)     # difficulty in [5..10]
         topic = random.choice(topics)
-        length = random.randint(10, 1000)
-
+        length = random.randint(100, 500)
         problems.append((pid, pts, diff, topic, length))
-        total += pts
 
-    # M chosen as mixed reachable/unreachable
-    M = random.randint(1, total)
+    # Step 3: choose M = 5P–8P (guaranteed reachable by <= 8 problems)
+    M = random.randint(5*P, 8*P)
 
     out = []
     out.append(f"{M} {N}")
     out.append(" ".join(topics))
-    for p in problems:
-        pid, pts, diff, topic, length = p
+
+    for pid, pts, diff, topic, length in problems:
         out.append(f"{pid} {pts} {diff} {topic} {length}")
 
     return "\n".join(out) + "\n"
@@ -116,6 +121,7 @@ def make_random_case():
 
 # ---------------------------------------------------------
 # 10 Hand-Written Edge Cases (Secret 11–20)
+# (Kept identical to your version; all N ≤ 60)
 # ---------------------------------------------------------
 
 EDGE_CASES = {}
@@ -191,7 +197,7 @@ dp graphs trees stacks queues greedy arrays heaps math strings
 16 7 3 greedy 170
 17 8 3 arrays 165
 18 6 3 heaps 155
-""" 
+"""
 
 EDGE_CASES["secret14"] = """180 25
 dp graphs trees stacks queues greedy arrays heaps math strings
@@ -378,19 +384,16 @@ def main():
     solver_path = root_dir / "submissions" / "accepted" / "solution.py"
     solver_cmd = [sys.executable, str(solver_path)]
 
-    # 1. Samples
     print("Generating sample cases...")
     save_case(sample_dir, "sample1", PDF_SAMPLE_1, solver_cmd)
     save_case(sample_dir, "sample2", PDF_SAMPLE_2, solver_cmd)
     save_case(sample_dir, "sample3", PDF_SAMPLE_3, solver_cmd)
 
-    # 2. 10 Random secret tests
     print("Generating random secret cases...")
     for i in range(1, NUM_RANDOM+1):
-        case = make_random_case()
-        save_case(secret_dir, f"secret{i:02d}", case, solver_cmd)
+        txt = make_random_case()
+        save_case(secret_dir, f"secret{i:02d}", txt, solver_cmd)
 
-    # 3. 10 Hand-written secret tests
     print("Generating hand-written secret cases...")
     for idx, name in enumerate(EDGE_CASES.keys(), start=NUM_RANDOM+1):
         save_case(secret_dir, f"secret{idx:02d}", EDGE_CASES[name], solver_cmd)
