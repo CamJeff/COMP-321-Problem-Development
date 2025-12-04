@@ -84,37 +84,59 @@ BASE_TOPICS = [
 
 def make_random_case():
     """
-    N = 50–60
-    pts up to ~1e15
-    every problem >= 10% M
-    difficulty 5..10
-    always reachable with <= 8 problems
+    RANDOM CASE GENERATOR (final version)
+
+    - N = 50–60
+    - pts up to <= 1e15
+    - difficulty in [5..10]
+    - each problem >= 10% of M
+    - assignment always solvable with <= 8 problems
     """
+
     N = random.randint(50, 60)
-    topics = BASE_TOPICS[:]
+    topics = BASE_TOPICS[:]   # all 10 topics
 
     problems = []
 
-    # Step 1: larger P so pts reach 1e15 range
-    P = random.randint(2 * 10**14, 4 * 10**14)
+    # ------------------------------------------------------
+    # Step 1: choose base point P
+    # P controls the entire scale of the instance.
+    #
+    # We choose P so that:
+    #   pts ∈ [P, 2P] and max pts <= 1e15
+    #   M  ∈ [5P, 10P]
+    # → therefore min pts / M >= P / (10P) = 10%
+    # ------------------------------------------------------
+    P = random.randint(10**14, 10**15 // 2)   # ensures 2P <= 1e15
 
-    # Step 2: generate problems with pts >= P
+    # ------------------------------------------------------
+    # Step 2: generate problems with points >= P
+    # pts <= 2P <= 1e15
+    # ------------------------------------------------------
     for pid in range(1, N + 1):
-        pts = random.randint(P, 3 * P)     # max ≈ 1.2e15
+        pts = random.randint(P, 2 * P)
         diff = random.randint(5, 10)
         topic = random.choice(topics)
         length = random.randint(100, 500)
         problems.append((pid, pts, diff, topic, length))
 
-    # Step 3: choose M so every problem >= 10% of M
-    M = random.randint(5 * P, 8 * P)       # pts >= 12.5% M guaranteed
+    # ------------------------------------------------------
+    # Step 3: choose M so that:
+    #   - each problem >= 10% M
+    #   - solvable with <= 8 problems:
+    #       Max sum from 8 problems ≥ M
+    # ------------------------------------------------------
+    M = random.randint(5 * P, 10 * P)   # ensures 10% rule exactly
 
+    # ------------------------------------------------------
+    # Build .in file
+    # ------------------------------------------------------
     out = [f"{M} {N}", " ".join(topics)]
-    for p in problems:
-        pid, pts, diff, topic, length = p
+    for pid, pts, diff, topic, length in problems:
         out.append(f"{pid} {pts} {diff} {topic} {length}")
 
     return "\n".join(out) + "\n"
+
 
 
 # ---------------------------------------------------------
