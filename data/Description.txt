@@ -1,90 +1,43 @@
 This folder contains 20 secret tests we use to thoroughly check the correctness and behavior
 of our “Procrastination Optimization” problem. Each .in file comes with a corresponding .ans
-generated using our accepted solver. We split the tests into two groups: 10 randomly generated
-cases to cover general behavior, and 10 hand-designed ones to target specific edge cases.
+generated using our accepted solver. We split the tests into two groups: 13 randomly generated
+cases to cover general behavior, and 7 hand-designed ones to target specific edge cases.
 
 ------------------------------------
   Randomly Generated Test Cases
 ------------------------------------
-
-Secret01:
-- A small random input meant to check basic parsing and that the solver handles the simplest cases.
-
-Secret02:
-- Random case with N around 8–15. Useful for checking whether the solver correctly applies
-  difficulty minimization as the first priority.
-
-Secret03:
-- Mid-size random test focusing on topic rankings. Ensures the solver uses topic preference
-  properly when earlier priorities tie.
-
-Secret04:
-- Random input where several problems have similar points but different text lengths.
-  This checks whether the solver correctly falls back to text length as the 4th priority.
-
-Secret05:
-- Random case involving repeated topics. Ensures topic rank handling is consistent.
-
-Secret06:
-- Random test with a moderate M. Designed to see if the solver reaches M without picking
-  unnecessary problems.
-
-Secret07:
-- Contains many small-point questions chosen randomly. Useful for checking whether the solver
-  can hit the point threshold only when needed.
-
-Secret08:
-- Random case that sometimes requires exploring deeper combinations before reaching M.
-  Helps confirm pruning cases are correct.
-
-Secret09:
-- Random input with larger text lengths scattered across problems. Makes sure text length
-  comparison works correctly in tie situations.
-
-Secret10:
-- A general “stress-style” random test with N up to 25. Ensures the solver can handle larger
-  random structures and won’t accidentally TLE or explode on typical data.
-
+Random inputs to simulate randomly generated assignment questions. 
 
 ------------------------------------
   Handcrafted Edge Cases
 ------------------------------------
-
-Secret11:
-- Small, simple case that is definitely reachable. A sanity check that scoring works as expected.
-
-Secret12:
-- Designed so the optimal solution uses nonconsecutive problems. Checks the solver doesn’t
-  rely on greedy or adjacent selection.
-
-Secret13:
-- A case intentionally built to test dominance pruning. Multiple partial states share the same
-  (index, points), but only one leads to the optimal final solution.
-
+Carfully crafted inputs to test specific features.
 Secret14:
-- Several problems have identical difficulty and length. Used to verify that tie-breaking continues
-  correctly using topic rank.
+- This is the "anti-DP" edgecase. N = 55, but the reason dp fails is due to the point
+  value being ~1.6*10^15. The DP solution makes a massive memoization table, which fills
+  up the memory and takes too long to iterate through.
 
 Secret15:
-- The only way to reach M is by combining multiple low-point problems. Tests the solver’s ability
-  to explore deeper subsets and prune effectively.
+- This is the "anti-Brute Force" edgecase. N = 60, so using Brute Force would be too slow.
+  Brute force traverses every single option, which is 2^60 operations, which is way too many.
+  Brute force reaches memory and time limit exceeded.
 
 Secret16:
-- Structured descending-point layout (about N = 20). Used to see how well pruning and our
-  suffix-sum bounding work on a worst-case style instance.
+- This is the "anti-Greedy" edgecase. A "bait" problem has Difficulty 5. The solution has Difficulty 6.
+  Greedy solutions will choose the bait problem first, when the correct solution is just problem 2.
 
 Secret17:
-- Variation of Secret16 but with a tighter M so the solver must mix high-point and mid-point
-  problems. Helps verify search ordering and cutoffs.
+- This is the "tie-breaker" edgecase. The only differences in problems are Topics and Length. 
+  The solution needs to consider them in the correct order.
 
 Secret18:
-- Large-M case (around 10^14–10^15), but solvable early thanks to a few very high-point tasks.
-  Tests handling of huge integers and early termination.
+-This is the "overshoot" edgecase. It's another Greedy trap. Greedy chooses 1 and 2, since they
+  both individually have lower difficulties, but together, the total difficulty is larger than 3.
 
 Secret19:
-- No combination of problems can ever reach M. Ensures the solver quickly concludes “-1”
-  instead of exploring everything.
+- This is the "count tie-breaker" edgecase. We want to do fewer problems when all other factors are
+  the same. The solution must choose 3, not 1 and 2.
 
 Secret20:
-- A final mixed edge-case that puts all priority rules to use: difficulty → number of problems →
-  topic alignment → text length. Meant to confirm the solver handles all tie-breaks consistently.
+- This is the "topic tie-breaker" edgecase. We must choose the "better" topic when all else is the same.
+  The solution is therefore 3.
