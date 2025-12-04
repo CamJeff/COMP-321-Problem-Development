@@ -1,0 +1,43 @@
+This folder contains 20 secret tests we use to thoroughly check the correctness and behavior
+of our “Procrastination Optimization” problem. Each .in file comes with a corresponding .ans
+generated using our accepted solver. We split the tests into two groups: 13 randomly generated
+cases to cover general behavior, and 7 hand-designed ones to target specific edge cases.
+
+------------------------------------
+  Randomly Generated Test Cases
+------------------------------------
+Random inputs to simulate randomly generated assignment questions. 
+
+------------------------------------
+  Handcrafted Edge Cases
+------------------------------------
+Carfully crafted inputs to test specific features.
+Secret14:
+- This is the "anti-DP" edgecase. N = 55, but the reason dp fails is due to the point
+  value being ~1.6*10^15. The DP solution makes a massive memoization table, which fills
+  up the memory and takes too long to iterate through.
+
+Secret15:
+- This is the "anti-Brute Force" edgecase. N = 60, so using Brute Force would be too slow.
+  Brute force traverses every single option, which is 2^60 operations, which is way too many.
+  Brute force reaches memory and time limit exceeded.
+
+Secret16:
+- This is the "anti-Greedy" edgecase. A "bait" problem has Difficulty 5. The solution has Difficulty 6.
+  Greedy solutions will choose the bait problem first, when the correct solution is just problem 2.
+
+Secret17:
+- This is the "tie-breaker" edgecase. The only differences in problems are Topics and Length. 
+  The solution needs to consider them in the correct order.
+
+Secret18:
+-This is the "overshoot" edgecase. It's another Greedy trap. Greedy chooses 1 and 2, since they
+  both individually have lower difficulties, but together, the total difficulty is larger than 3.
+
+Secret19:
+- This is the "count tie-breaker" edgecase. We want to do fewer problems when all other factors are
+  the same. The solution must choose 3, not 1 and 2.
+
+Secret20:
+- This is the "topic tie-breaker" edgecase. We must choose the "better" topic when all else is the same.
+  The solution is therefore 3.
