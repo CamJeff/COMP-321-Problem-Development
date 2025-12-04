@@ -117,7 +117,7 @@ def make_random_case():
         pts = random.randint(P, 2 * P)
         diff = random.randint(5, 10)
         topic = random.choice(topics)
-        length = random.randint(100, 500)
+        length = random.randint(100, 1000)
         problems.append((pid, pts, diff, topic, length))
 
     # ------------------------------------------------------
