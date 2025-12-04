@@ -84,36 +84,34 @@ BASE_TOPICS = [
 
 def make_random_case():
     """
-    Random case with proper 10% rule:
-    - N = 50–60
-    - All topics = 10 topics
-    - Base point P chosen first
-    - Every problem has pts >= 10% M (guaranteed)
+    N = 50–60
+    pts up to ~1e15
+    every problem >= 10% M
+    difficulty 5..10
+    always reachable with <= 8 problems
     """
     N = random.randint(50, 60)
     topics = BASE_TOPICS[:]
 
-    # Step 1: choose base point P
-    P = random.randint(10**10, 5 * 10**10)
-
     problems = []
 
-    # Step 2: generate problems with pts >= P (later we ensure M <= 8P)
-    for pid in range(1, N+1):
-        pts = random.randint(P, 3*P)
-        diff = random.randint(5, 10)     # difficulty in [5..10]
+    # Step 1: larger P so pts reach 1e15 range
+    P = random.randint(2 * 10**14, 4 * 10**14)
+
+    # Step 2: generate problems with pts >= P
+    for pid in range(1, N + 1):
+        pts = random.randint(P, 3 * P)     # max ≈ 1.2e15
+        diff = random.randint(5, 10)
         topic = random.choice(topics)
         length = random.randint(100, 500)
         problems.append((pid, pts, diff, topic, length))
 
-    # Step 3: choose M = 5P–8P (guaranteed reachable by <= 8 problems)
-    M = random.randint(5*P, 8*P)
+    # Step 3: choose M so every problem >= 10% of M
+    M = random.randint(5 * P, 8 * P)       # pts >= 12.5% M guaranteed
 
-    out = []
-    out.append(f"{M} {N}")
-    out.append(" ".join(topics))
-
-    for pid, pts, diff, topic, length in problems:
+    out = [f"{M} {N}", " ".join(topics)]
+    for p in problems:
+        pid, pts, diff, topic, length = p
         out.append(f"{pid} {pts} {diff} {topic} {length}")
 
     return "\n".join(out) + "\n"
