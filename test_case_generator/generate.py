@@ -8,9 +8,9 @@ from pathlib import Path
 # Global Config
 # ---------------------------------------------------------
 
-RANDOM_SEED = 321321
-NUM_RANDOM = 10
-NUM_EDGE = 10
+RANDOM_SEED = 999
+NUM_RANDOM = 13
+NUM_EDGE = 7
 
 
 # ---------------------------------------------------------
@@ -50,26 +50,26 @@ def save_case(directory, base, text, solver_cmd):
 # ---------------------------------------------------------
 
 PDF_SAMPLE_1 = """10 4
-dp graphs arrays
-1 5 3 dp 120
-2 6 5 graphs 200
-3 4 1 arrays 50
-4 8 4 dp 300
+dp graphs arrays trees queues
+1 5 8 dp 120
+2 6 10 graphs 200
+3 4 6 arrays 50
+4 8 9 dp 300
 """
 
 PDF_SAMPLE_2 = """10 3
-stacks queues trees
-1 2 1 stacks 100
-2 2 1 stacks 100
-3 10 9 trees 100
+stacks queues trees strings dp
+1 2 5 stacks 100
+2 2 5 stacks 100
+3 10 10 trees 100
 """
 
 PDF_SAMPLE_3 = """100000000000000 4
-greedy dijkstra strings
-1 60000000000000 3 greedy 5000
-2 50000000000000 2 dijkstra 8000
-3 40000000000000 1 strings 2000
-4 70000000000000 5 greedy 10000
+greedy dijkstra strings stacks dp
+1 60000000000000 8 greedy 5000
+2 50000000000000 7 dijkstra 8000
+3 40000000000000 6 strings 2000
+4 70000000000000 10 greedy 10000
 """
 
 
@@ -77,6 +77,7 @@ greedy dijkstra strings
 # Secret Tests — Random (FAST VERSION)
 # ---------------------------------------------------------
 
+# 10 topics
 BASE_TOPICS = [
     "dp", "graphs", "trees", "stacks", "queues",
     "greedy", "arrays", "heaps", "math", "strings"
@@ -86,15 +87,15 @@ def make_random_case():
     """
     RANDOM CASE GENERATOR (final version)
 
-    - N = 50–60
+    - N = 50-60
     - pts up to <= 1e15
     - difficulty in [5..10]
     - each problem >= 10% of M
     - assignment always solvable with <= 8 problems
     """
 
-    N = random.randint(50, 60)
-    topics = BASE_TOPICS[:]   # all 10 topics
+    N = random.randint(10, 60)
+    topics = random.sample(BASE_TOPICS, 5) # 5 out of the 10 topics
 
     problems = []
 
@@ -114,10 +115,10 @@ def make_random_case():
     # pts <= 2P <= 1e15
     # ------------------------------------------------------
     for pid in range(1, N + 1):
-        pts = random.randint(P, 2 * P)
-        diff = random.randint(5, 10)
-        topic = random.choice(topics)
-        length = random.randint(100, 1000)
+        pts = random.randint(P, 2 * P) # Points from 10^14 to 10^15
+        diff = random.randint(5, 10) # Difficulty from 5 to 10
+        topic = random.choice(topics) # Any one of the listed topics
+        length = random.randint(10, 1000) # Up to 1000 words
         problems.append((pid, pts, diff, topic, length))
 
     # ------------------------------------------------------
@@ -126,7 +127,7 @@ def make_random_case():
     #   - solvable with <= 8 problems:
     #       Max sum from 8 problems ≥ M
     # ------------------------------------------------------
-    M = random.randint(5 * P, 10 * P)   # ensures 10% rule exactly
+    M = random.randint(5 * P, 10 * P) # ensures 10% rule exactly
 
     # ------------------------------------------------------
     # Build .in file
@@ -138,253 +139,223 @@ def make_random_case():
     return "\n".join(out) + "\n"
 
 
-
 # ---------------------------------------------------------
-# 10 Hand-Written Edge Cases (Secret 11–20)
-# (Kept identical to your version; all N ≤ 60)
+# 6 Hand-Written Edge Cases (Secret 15–20)
 # ---------------------------------------------------------
 
 EDGE_CASES = {}
 
-EDGE_CASES["secret11"] = """500 25
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 200 2 dp 500
-2 150 3 graphs 400
-3 180 4 trees 350
-4 50 1 stacks 300
-5 60 1 queues 250
-6 70 2 greedy 200
-7 40 1 arrays 180
-8 30 2 heaps 160
-9 25 1 math 140
-10 20 2 strings 130
-11 15 1 dp 120
-12 14 1 graphs 110
-13 13 1 trees 100
-14 12 1 stacks 95
-15 11 1 queues 90
-16 10 1 greedy 85
-17 9 1 arrays 80
-18 8 1 heaps 75
-19 7 1 math 70
-20 6 1 strings 65
-21 5 1 dp 60
-22 4 1 graphs 55
-23 3 1 trees 50
-24 2 1 stacks 45
-25 1 1 queues 40
+# "Anti-DP" Case, M is too large ~10^15
+# And different point values creates a huge
+# memoization table
+# Solution: 51 to 60
+EDGE_CASES["secret14"] = """1664648579257252 55
+math dp heaps stacks graphs
+1 275310451627982 5 math 345
+2 224009644306391 7 dp 93
+3 188000472827997 6 stacks 963
+4 301480838346260 10 stacks 252
+5 184414918810168 6 heaps 442
+6 299480454747019 9 stacks 191
+7 299059026814417 9 graphs 78
+8 175235932836036 5 graphs 957
+9 326870514668770 10 math 814
+10 193303974366425 8 dp 472
+11 327895540618812 6 math 688
+12 283680593358882 9 stacks 920
+13 309532162001267 9 math 600
+14 332071500748619 10 heaps 459
+15 228272562764032 7 graphs 744
+16 230326866153622 8 stacks 780
+17 292918769611773 5 heaps 576
+18 268129752880351 7 dp 939
+19 195075483730569 7 dp 350
+20 326174706380959 9 dp 58
+21 319307589275198 10 math 792
+22 269828422248613 7 dp 77
+23 200223343709352 10 graphs 63
+24 347438158075416 6 math 520
+25 282378177924615 10 dp 379
+26 207682653369411 9 math 554
+27 276592400475259 8 stacks 93
+28 189084174661945 7 heaps 16
+29 209083199907267 8 graphs 853
+30 300252654192848 9 math 349
+31 341763040153840 10 stacks 258
+32 185739524095963 7 graphs 386
+33 262345201004631 9 dp 227
+34 259191744366721 9 math 425
+35 304764584529719 9 stacks 486
+36 348273622635810 9 math 411
+37 311980650721309 6 dp 821
+38 248685991757844 8 heaps 35
+39 276158241789185 7 graphs 657
+40 187044366505866 10 stacks 224
+41 241252263336039 7 dp 628
+42 271013716579990 10 math 968
+43 266007797061341 10 dp 962
+44 218199478646947 8 graphs 999
+45 259907490443315 8 stacks 695
+46 319218820989082 7 heaps 726
+47 286247499923336 7 heaps 581
+48 329589022188347 10 dp 179
+49 232103924170895 10 dp 276
+50 336489504195733 7 graphs 896
+51 328185991506878 9 graphs 308
+52 273631897542288 5 heaps 108
+53 333069586055821 10 stacks 578
+54 232269256360166 5 dp 513
+55 251734738602598 7 dp 829
 """
 
-EDGE_CASES["secret12"] = """1500000000000000 18
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 300000000000000 5 dp 500
-2 250000000000000 4 graphs 480
-3 200000000000000 4 trees 460
-4 180000000000000 3 stacks 440
-5 150000000000000 3 queues 420
-6 140000000000000 3 greedy 400
-7 130000000000000 2 arrays 380
-8 120000000000000 2 heaps 360
-9 110000000000000 2 math 340
-10 100000000000000 1 strings 320
-11 90000000000000  1 dp 300
-12 80000000000000  1 graphs 290
-13 70000000000000  1 trees 280
-14 60000000000000  1 stacks 270
-15 50000000000000  1 queues 260
-16 40000000000000  1 greedy 250
-17 30000000000000  1 arrays 240
-18 20000000000000  1 heaps 230
+# "Anti-Brute Force" Case, N = 60, too slow
+# Solution: 51 to 60
+EDGE_CASES["secret15"] = """1000000000000000 60
+dp graphs trees stacks queues
+1 100000000000000 10 dp 100
+2 100000000000000 10 dp 100
+3 100000000000000 10 dp 100
+4 100000000000000 10 dp 100
+5 100000000000000 10 dp 100
+6 100000000000000 10 dp 100
+7 100000000000000 10 dp 100
+8 100000000000000 10 dp 100
+9 100000000000000 10 dp 100
+10 100000000000000 10 dp 100
+11 100000000000000 10 dp 100
+12 100000000000000 10 dp 100
+13 100000000000000 10 dp 100
+14 100000000000000 10 dp 100
+15 100000000000000 10 dp 100
+16 100000000000000 10 dp 100
+17 100000000000000 10 dp 100
+18 100000000000000 10 dp 100
+19 100000000000000 10 dp 100
+20 100000000000000 10 dp 100
+21 100000000000000 10 dp 100
+22 100000000000000 10 dp 100
+23 100000000000000 10 dp 100
+24 100000000000000 10 dp 100
+25 100000000000000 10 dp 100
+26 100000000000000 10 dp 100
+27 100000000000000 10 dp 100
+28 100000000000000 10 dp 100
+29 100000000000000 10 dp 100
+30 100000000000000 10 dp 100
+31 100000000000000 10 dp 100
+32 100000000000000 10 dp 100
+33 100000000000000 10 dp 100
+34 100000000000000 10 dp 100
+35 100000000000000 10 dp 100
+36 100000000000000 10 dp 100
+37 100000000000000 10 dp 100
+38 100000000000000 10 dp 100
+39 100000000000000 10 dp 100
+40 100000000000000 10 dp 100
+41 100000000000000 10 dp 100
+42 100000000000000 10 dp 100
+43 100000000000000 10 dp 100
+44 100000000000000 10 dp 100
+45 100000000000000 10 dp 100
+46 100000000000000 10 dp 100
+47 100000000000000 10 dp 100
+48 100000000000000 10 dp 100
+49 100000000000000 10 dp 100
+50 100000000000000 10 dp 100
+51 100000000000000 5 dp 100
+52 100000000000000 5 dp 100
+53 100000000000000 5 dp 100
+54 100000000000000 5 dp 100
+55 100000000000000 5 dp 100
+56 100000000000000 5 dp 100
+57 100000000000000 5 dp 100
+58 100000000000000 5 dp 100
+59 100000000000000 5 dp 100
+60 100000000000000 5 dp 100
 """
 
-EDGE_CASES["secret13"] = """120 18
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 7 3 dp 200
-2 6 3 graphs 180
-3 8 3 trees 160
-4 5 3 stacks 210
-5 9 3 queues 190
-6 7 3 greedy 170
-7 8 3 arrays 160
-8 6 3 heaps 150
-9 9 3 math 140
-10 5 3 strings 130
-11 7 3 dp 200
-12 6 3 graphs 180
-13 8 3 trees 160
-14 5 3 stacks 210
-15 9 3 queues 195
-16 7 3 greedy 170
-17 8 3 arrays 165
-18 6 3 heaps 155
+# "Anti-Greedy" Case
+# A "bait" problem has Difficulty 5. The solution has Difficulty 6
+# Solution: 2
+EDGE_CASES["secret16"] = """1000000000000000 2
+greedy arrays heaps math strings
+1 100000000000000 5 greedy 1
+2 1000000000000000 6 greedy 1
 """
 
-EDGE_CASES["secret14"] = """180 25
-dp graphs trees stacks queues greedy arrays heaps math strings
-""" + "\n".join([f"{i} 60 3 {BASE_TOPICS[(i-1)%10]} 200" for i in range(1,10)]) + """
-""" + "\n".join([f"{i} 30 3 {BASE_TOPICS[(i-1)%10]} 150" for i in range(10,20)]) + """
-""" + "\n".join([f"{i} 10 3 {BASE_TOPICS[(i-1)%10]} 100" for i in range(20,26)]) + "\n"
-
-EDGE_CASES["secret15"] = """200 25
-dp
-1 50 2 dp 2000
-2 60 2 dp 1900
-3 70 2 dp 1800
-4 80 2 dp 1700
-5 40 2 dp 1600
-6 30 2 dp 1500
-7 20 2 dp 1400
-8 25 2 dp 1300
-9 35 2 dp 1200
-10 45 2 dp 1100
-11 15 2 dp 1000
-12 18 2 dp 900
-13 22 2 dp 800
-14 29 2 dp 700
-15 33 2 dp 600
-16 37 2 dp 500
-17 41 2 dp 400
-18 44 2 dp 300
-19 48 2 dp 200
-20 52 2 dp 100
-21 5 2 dp 90
-22 8 2 dp 80
-23 10 2 dp 70
-24 12 2 dp 60
-25 14 2 dp 50
+# "Tie-Breaker" Case, the only differences are 
+# Topics and Length. Solution: 2
+EDGE_CASES["secret17"] = """1000000000000000 40
+arrays heaps stacks queues trees
+1 1000000000000000 5 heaps 1000
+2 1000000000000000 5 arrays 1
+3 1000000000000000 5 stacks 5000
+4 1000000000000000 5 queues 10
+5 1000000000000000 5 trees 100
+6 1000000000000000 5 heaps 1000
+7 1000000000000000 5 arrays 10000
+8 1000000000000000 5 stacks 5000
+9 1000000000000000 5 queues 10
+10 1000000000000000 5 trees 100
+11 1000000000000000 5 heaps 1000
+12 1000000000000000 5 arrays 10000
+13 1000000000000000 5 stacks 5000
+14 1000000000000000 5 queues 10
+15 1000000000000000 5 trees 100
+16 1000000000000000 5 heaps 1000
+17 1000000000000000 5 arrays 10000
+18 1000000000000000 5 stacks 5000
+19 1000000000000000 5 queues 10
+20 1000000000000000 5 trees 100
+21 1000000000000000 5 heaps 1000
+22 1000000000000000 5 arrays 10000
+23 1000000000000000 5 stacks 5000
+24 1000000000000000 5 queues 10
+25 1000000000000000 5 trees 100
+26 1000000000000000 5 heaps 1000
+27 1000000000000000 5 arrays 10000
+28 1000000000000000 5 stacks 5000
+29 1000000000000000 5 queues 10
+30 1000000000000000 5 trees 100
+31 1000000000000000 5 heaps 1000
+32 1000000000000000 5 arrays 10000
+33 1000000000000000 5 stacks 5000
+34 1000000000000000 5 queues 10
+35 1000000000000000 5 trees 100
+36 1000000000000000 5 heaps 1000
+37 1000000000000000 5 arrays 10000
+38 1000000000000000 5 stacks 5000
+39 1000000000000000 5 queues 10
+40 1000000000000000 5 trees 100
 """
 
-EDGE_CASES["secret16"] = """220 20
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 40 3 dp 200
-2 35 3 graphs 190
-3 30 3 trees 185
-4 28 4 stacks 180
-5 27 4 queues 175
-6 10 2 greedy 150
-7 10 2 arrays 145
-8 9 2 heaps 140
-9 9 2 math 135
-10 8 2 strings 130
-11 7 2 dp 120
-12 7 2 graphs 115
-13 6 2 trees 110
-14 6 2 stacks 105
-15 5 2 queues 100
-16 4 1 greedy 90
-17 4 1 arrays 80
-18 4 1 heaps 70
-19 3 1 math 60
-20 3 1 strings 50
+# "Overshoot" Case, traps greedy solution
+# Solution: 3
+EDGE_CASES["secret18"] = """1000000000000000 3
+dp graphs trees stacks queues
+1 500000000000000 5 dp 100
+2 500000000000000 5 dp 100
+3 1000000000000000 9 dp 100
 """
 
-EDGE_CASES["secret17"] = """500000000000 25
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 300000000000 4 dp 2000
-2 250000000000 3 graphs 1900
-3 200000000000 5 trees 1800
-4 100000000000 2 stacks 1700
-5 150000000000 3 queues 1600
-6 120000000000 2 greedy 1500
-7 110000000000 4 arrays 1400
-8 90000000000 5 heaps 1300
-9 80000000000 3 math 1200
-10 70000000000 2 strings 1100
-11 60000000000 2 dp 1000
-12 50000000000 3 graphs 900
-13 40000000000 3 trees 800
-14 30000000000 4 stacks 700
-15 20000000000 5 queues 600
-16 18000000000 1 greedy 500
-17 16000000000 1 arrays 450
-18 14000000000 1 heaps 400
-19 12000000000 1 math 350
-20 10000000000 1 strings 300
-21 9000000000 1 dp 260
-22 8000000000 1 graphs 240
-23 7000000000 1 trees 220
-24 6000000000 1 stacks 200
-25 5000000000 1 queues 180
+# "Count" Tie-Breaker Case
+# Fewer problems must win (not 1 and 2)
+# Solution: 3
+EDGE_CASES["secret19"] = """1000000000000000 3
+dp graphs trees stacks queues
+1 500000000000000 5 dp 100
+2 500000000000000 5 dp 100
+3 1000000000000000 10 dp 100
 """
 
-EDGE_CASES["secret18"] = """300000000000000 25
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 80000000000000 4 dp 500
-2 70000000000000 5 graphs 480
-3 60000000000000 3 trees 460
-4 50000000000000 3 stacks 440
-5 40000000000000 2 queues 420
-6 30000000000000 1 greedy 400
-7 25000000000000 2 arrays 380
-8 20000000000000 1 heaps 360
-9 18000000000000 1 math 340
-10 16000000000000 1 strings 320
-11 14000000000000 2 dp 300
-12 13000000000000 2 graphs 290
-13 12000000000000 3 trees 280
-14 11000000000000 3 stacks 270
-15 10000000000000 1 queues 260
-16 9000000000000 1 greedy 250
-17 8000000000000 1 arrays 240
-18 7000000000000 1 heaps 230
-19 6000000000000 1 math 220
-20 5000000000000 1 strings 210
-21 4000000000000 1 dp 200
-22 3000000000000 1 graphs 190
-23 2000000000000 1 trees 180
-24 1000000000000 1 stacks 170
-25 900000000000 1 queues 160
-"""
-
-EDGE_CASES["secret19"] = """300 25
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 100 5 dp 500
-2 100 5 graphs 450
-3 100 5 trees 480
-4 90 5 stacks 430
-5 90 5 queues 420
-6 80 5 greedy 410
-7 80 5 arrays 400
-8 70 5 heaps 390
-9 70 5 math 380
-10 60 5 strings 370
-11 50 5 dp 360
-12 50 5 graphs 350
-13 50 5 trees 340
-14 40 5 stacks 330
-15 40 5 queues 320
-16 40 5 greedy 310
-17 30 5 arrays 300
-18 30 5 heaps 290
-19 30 5 math 280
-20 30 5 strings 270
-21 20 5 dp 260
-22 20 5 graphs 250
-23 20 5 trees 240
-24 20 5 stacks 230
-25 20 5 queues 220
-"""
-
-EDGE_CASES["secret20"] = """260 18
-dp graphs trees stacks queues greedy arrays heaps math strings
-1 60 3 dp      300
-2 55 3 graphs  280
-3 50 4 trees   260
-4 45 4 stacks  240
-5 40 5 queues  230
-6 20 2 greedy  200
-7 18 2 arrays  195
-8 17 2 heaps   190
-9 15 2 math    185
-10 14 2 strings 180
-11 12 1 dp      160
-12 12 1 graphs  150
-13 10 1 trees   140
-14 10 1 stacks  130
-15 9  1 queues  120
-16 8  1 greedy  100
-17 7  1 arrays   90
-18 6  1 heaps    80
+# "Topic" Tie-Breaker Case
+# Must choose the "better" topic
+# Solution: 3
+EDGE_CASES["secret20"] = """1000000000000000 3
+dp graphs trees stacks queues
+1 1000000000000000 10 graphs 100
+2 1000000000000000 10 queues 100
+3 1000000000000000 10 dp 100
 """
 
 
