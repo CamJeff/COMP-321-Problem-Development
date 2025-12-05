@@ -71,12 +71,12 @@ to do so while trying to:
 
 \section*{Input}
 
-The first line contains two integers $M$ and $N$, representing the minimum number of points required for full marks and the number of available problems on this assignment, where $1\leq N\leq 20$, and $1\leq M\leq 10^{15}$.
+The first line contains two integers $M$ and $N$, representing the minimum number of points required for full marks and the number of available problems on this assignment, where $1\leq N\leq 60$, and $1\leq M\leq 10^{15}$.
 
 \bigskip
 
 \noindent
-The second line contains a list of distinct strings, each representing a topic. The list is ordered from the topic you understand best to the one you understand least.
+The second line contains a space-separated list of five distinct strings, each representing a topic. The list is ordered from the topic you understand the best to the one you understand the least.
 
 \bigskip
 
@@ -92,10 +92,12 @@ Here:
 \begin{itemize}
     \item \texttt{Problem\_No.} is an integer in $[1, N]$.
     \item \texttt{Points} is a non-negative integer representing how many points the problem is worth. (It is not required to be $\le M$.)
-    \item \texttt{Difficulty} is an integer rating from $1$ to $10$, with larger values indicating harder problems.
-    \item \texttt{Topic} is a non-empty string (no spaces) indicating the assigned topic of the problem. Every topic must appear in the topic list on the second line.
-    \item \texttt{Text\_Length} is an integer between $1$ and $10^4$ representing the number of words in the problem statement.
+    \item \texttt{Difficulty} is an integer rating from $5$ to $10$, with larger values indicating harder problems.
+    \item \texttt{Topic} is a non-empty string (no spaces) indicating the assigned topic of the problem. Every topic is chosen from one of the five topics in the second line of input.
+    \item \texttt{Text\_Length} is an integer between $1$ and $1000$ representing the number of words in the problem statement.
 \end{itemize}
+
+\noindent Assume that each problem will be guaranteed to have at least $10\%$ of the minimum point value $M$ needed to achieve full marks.
 
 
 \section*{Output}
@@ -111,11 +113,11 @@ One line, containing the problem numbers, separated by spaces, that you choose i
     \textbf{Sample Input 1}\\[4pt]
     \begin{tcolorbox}[samplebox]
       \texttt{10 4\\
-      dp graphs arrays\\
-      1 5 3 dp 120\\
-      2 6 5 graphs 200\\
-      3 4 1 arrays 50\\
-      4 8 4 dp 300}
+      dp graphs arrays trees queues\\
+      1 5 8 dp 120\\
+      2 6 10 graphs 200\\
+      3 4 6 arrays 50\\
+      4 8 9 dp 300}
     \end{tcolorbox}
   \end{minipage}
   \hfill
@@ -138,11 +140,10 @@ One line, containing the problem numbers, separated by spaces, that you choose i
     \textbf{Sample Input 2}\\[4pt]
     \begin{tcolorbox}[samplebox]
       \texttt{10 3 \\
-stacks queues trees \\
-1 2 1 stacks 100 \\
-2 2 1 stacks 100 \\
-3 10 9 trees 100 \\
-}
+stacks queues trees strings dp \\
+1 2 5 stacks 100 \\
+2 2 5 stacks 100 \\
+3 10 10 trees 100}
     \end{tcolorbox}
   \end{minipage}
   \hfill
@@ -164,11 +165,11 @@ stacks queues trees \\
     \textbf{Sample Input 3}\\[4pt]
     \begin{tcolorbox}[samplebox]
       \texttt{100000000000000 4 \\
-greedy dijkstra strings \\
-1 60000000000000 3 greedy 5000 \\
-2 50000000000000 2 dijkstra 8000 \\
-3 40000000000000 1 strings 2000 \\
-4 70000000000000 5 greedy 10000
+greedy dijkstra strings stacks dp \\
+1 60000000000000 8 greedy 5000 \\
+2 50000000000000 7 dijkstra 8000 \\
+3 40000000000000 6 strings 2000 \\
+4 70000000000000 10 greedy 10000
 }
     \end{tcolorbox}
   \end{minipage}
@@ -181,3 +182,15 @@ greedy dijkstra strings \\
     \end{tcolorbox}
   \end{minipage}
 \end{center}
+
+
+
+\newpage
+
+
+
+
+
+
+
+\end{document}
