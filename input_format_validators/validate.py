@@ -28,7 +28,7 @@ def main():
         error("First line must contain two integers M N")
 
     if M < 0 or M > 1e15:
-        error("M out of range"")
+        error("M out of range")
     if N < 0 or N > 60:
         error("N out of range")
 
@@ -77,7 +77,7 @@ def main():
         except:
             error("Points must be an integer")
         if pts < 0 or M*0.10 > pts:
-            error("Points must be positive and at least 0.1 times M")
+            error("Points must be positive and 10% of M")
 
         # difficulty: non-negative integer
         try:
