@@ -29,15 +29,15 @@ def main():
 
     if M < 0 or M > 1e15:
         error("M out of range"")
-    if N < 0 or N > 15:
+    if N < 0 or N > 60:
         error("N out of range")
 
     # -----------------------------------------
     # Line 2: topic strings (distinct)
     # -----------------------------------------
     topics = data[1].split()
-    if len(topics) == 0:
-        error("At least one topic required")
+    if len(topics) != 5:
+        error("Five topics are required")
 
     if len(topics) != len(set(topics)):
         error("Topic strings must be distinct")
@@ -71,21 +71,21 @@ def main():
             error("Duplicate problem id")
         seen_ids.add(pid)
 
-        # points: any non-negative integer (CAN be > M)
+        # points: any non-negative integer that is at least 10% of M
         try:
             pts = int(pts_str)
         except:
             error("Points must be an integer")
-        if pts < 0:
-            error("Points must be non-negative")
+        if pts < 0 or M*0.10 > pts:
+            error("Points must be positive and at least 0.1 times M")
 
         # difficulty: non-negative integer
         try:
             diff = int(diff_str)
         except:
             error("Difficulty must be an integer")
-        if diff < 1 or diff > 10:
-            error("Difficulty must be between 1-10")
+        if diff < 5 or diff > 10:
+            error("Difficulty must be between 5-10")
 
         # topic must be in the topic list
         if topic_str not in topics:
@@ -96,8 +96,8 @@ def main():
             length = int(length_str)
         except:
             error("Length must be an integer")
-        if length < 0:
-            error("Length must be non-negative")
+        if length < 0 or length > 1000:
+            error("Length must be positive and at most 1000")
 
     # If all checks pass:
     return
